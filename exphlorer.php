@@ -130,6 +130,23 @@ if ( ($_SERVER["argc"] === 2) || ($_SERVER["argc"] === 3 && $_SERVER['argv'][2] 
     $pwd = getcwd();
     $_SERVER['PWD'] = $pwd;
 
+    // fake it so that this is not a console app
+    $autoloadPaths = [
+        $pwd.'/../vendor/autoload.php',
+        $pwd.'/vendor/autoload.php'
+    ];
+    foreach($autoloadPaths as $autoloadPath) {
+        if (file_exists($autoloadPath)) {
+            require_once $autoloadPath;
+            break;
+        }
+    }
+
+    //deal with zend framework, fake it as non-cli app
+    if (class_exists("Zend\Console\Console")) {
+        Zend\Console\Console::overrideIsConsole(false);
+    }
+
     //now include the entry file
     require_once $profileData["SCRIPT_FILENAME"];
 }
