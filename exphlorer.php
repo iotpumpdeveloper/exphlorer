@@ -6,16 +6,25 @@
  */
 if ($_SERVER["argc"] === 1) {
     print "Usage: php {__FILE__} [profile json file]\n";
+    print "Usage: php {__FILE__} [profile json file] trace\n";
+    print "Usage: php {__FILE__} [profile json file] trace [REQUEST_URI]\n";
+    print "Usage: php {__FILE__} [profile json file] run [REQUEST_URI]\n";
     exit();
 }
 
 $traceContent = "";
-if ($_SERVER["argc"] === 2) {
+if ($_SERVER["argc"] === 2 || ($_SERVER["argc"] > 2 && $_SERVER['argv'][2] === 'trace')) {
     $profileJSONFILE = $_SERVER["argv"][1];
     $curFile = __FILE__;
     $curDir = __DIR__;
     $traceFile = "$curDir/trace.txt";
-    $cmd = "SPX_ENABLED=1 SPX_REPORT=trace SPX_TRACE_FILE=$traceFile php $curFile $profileJSONFILE run > /dev/null 2>&1";
+    $cmd = "";
+    if (isset($_SERVER['argv'][3])) {
+        $requestUri = $_SERVER['argv'][3];
+        $cmd = "SPX_ENABLED=1 SPX_REPORT=trace SPX_TRACE_FILE=$traceFile php $curFile $profileJSONFILE run $requestUri > /dev/null 2>&1";
+    } else {
+        $cmd = "SPX_ENABLED=1 SPX_REPORT=trace SPX_TRACE_FILE=$traceFile php $curFile $profileJSONFILE run > /dev/null 2>&1";
+    }
     shell_exec($cmd);
     //now try only get the relavant information
     $traceContent = file_get_contents($traceFile);
@@ -88,6 +97,9 @@ if ($_SERVER["argc"] === 2) {
         }
         //now write the result content to the file
         file_put_contents($traceFile, $resultContent);
+
+        //now run the script again by setting the the mode to "run"
+        $_SERVER['argv'][2] = 'run';
     }
 }
 
