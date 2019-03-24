@@ -73,7 +73,7 @@ if ($_SERVER["argc"] === 2) {
                                 $charPos = $match[1];
                                 list($before) = str_split($targetFileContent, $charPos);
                                 $lineNumber = strlen($before) - strlen(str_replace("\n", "", $before)) + 1;
-                                $resultContent .= $depth.".".$targetFileToSearch."(".$lineNumber.") ".$token."\n";
+                                $resultContent .= $depth.". ".$targetFileToSearch."(".$lineNumber.") ".$token."\n";
                             }
                         }
                     }
