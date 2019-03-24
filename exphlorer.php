@@ -28,6 +28,7 @@ if ($_SERVER["argc"] === 2 || ($_SERVER["argc"] > 2 && $_SERVER['argv'][2] === '
     shell_exec($cmd);
     //now try only get the relavant information
     $traceContent = file_get_contents($traceFile);
+    file_put_contents("trace_raw.txt", $traceContent);
     if (strlen($traceContent) > 0) {
         $lines = explode("\n", trim($traceContent));
         $numOfLines = count($lines);
