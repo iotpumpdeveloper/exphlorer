@@ -15,7 +15,7 @@ if ($_SERVER["argc"] === 2) {
     $curFile = __FILE__;
     $curDir = __DIR__;
     $traceFile = "$curDir/trace.txt";
-    $cmd = "SPX_ENABLED=1 SPX_REPORT=trace SPX_TRACE_FILE=$traceFile php $curFile $profileJSONFILE trace > /dev/null 2>&1";
+    $cmd = "SPX_ENABLED=1 SPX_REPORT=trace SPX_TRACE_FILE=$traceFile php $curFile $profileJSONFILE run > /dev/null 2>&1";
     shell_exec($cmd);
     //now try only get the relavant information
     $traceContent = file_get_contents($traceFile);
@@ -91,7 +91,7 @@ if ($_SERVER["argc"] === 2) {
     }
 }
 
-if ( ($_SERVER["argc"] === 2) || ($_SERVER["argc"] === 3 && $_SERVER['argv'][2] === 'trace')) {
+if ( ($_SERVER["argc"] === 2) || ($_SERVER["argc"] > 2 && $_SERVER['argv'][2] === 'run')) {
     $profileJSONFILE = $_SERVER["argv"][1];
     $profileData = json_decode(file_get_contents($profileJSONFILE), true);
 
@@ -123,6 +123,12 @@ if ( ($_SERVER["argc"] === 2) || ($_SERVER["argc"] === 3 && $_SERVER['argv'][2] 
         if (!in_array($key, $phpSpecialVars)) {
             $_SERVER[$key] = $val;
         }
+    }
+
+    //override the REQUEST_URI
+    if (isset($_SERVER['argv'][3])) {
+        $_SERVER['REQUEST_URI'] = $_SERVER['argv'][3];
+        $REQUEST_URI = $_SERVER['argv'][3];
     }
 
     //fix current path
